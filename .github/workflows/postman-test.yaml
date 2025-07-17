@@ -2,7 +2,7 @@ name: Automated Testing using Postman CLI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   automated-api-tests:
