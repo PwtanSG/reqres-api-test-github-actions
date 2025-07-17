@@ -1,8 +1,11 @@
 name: Automated Testing using Postman CLI
 
-on:
+on: # Tiggers the workflow on push event for muster branch
   push:
     branches: [master]
+
+# Allows this workflow to manually run from Github Actions tab
+workflow_dispatch:
 
 jobs:
   automated-api-tests:
