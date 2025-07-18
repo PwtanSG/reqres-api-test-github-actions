@@ -245,6 +245,21 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "reqres-free-v1",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "x-api-key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -493,7 +508,19 @@
 			},
 			"request": {
 				"auth": {
-					"type": "noauth"
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "reqres-free-v1",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "x-api-key",
+							"type": "string"
+						}
+					]
 				},
 				"method": "GET",
 				"header": [],

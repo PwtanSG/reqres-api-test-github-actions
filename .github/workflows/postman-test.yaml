@@ -9,12 +9,32 @@ jobs:
   automated-api-tests:
     runs-on: ubuntu-latest
     steps:
+      # checkout repository
       - uses: actions/checkout@v4
-      - name: Install Postman CLI
+      - name: Create report folder
         run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-      - name: Login to Postman CLI
-        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-      - name: Run API tests
+          mkdir results
+
+      # Install NodeJS
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version:"18.x"
+
+      # install newman and reporter
+      - name: Install newman and reporter
         run: |
-          postman collection run 46119814-919580a4-3d49-4fdd-be9f-c3f9bafe82d7 -e 46119814-1d2e8ad3-6ebd-459f-bd11-3fe7851a7433
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      # run collection
+      - name: run collection
+        run: |
+          newman run "collections/ReqResApiTest.postman_collection.json" -e "collections/reqres.postman_environment.json" -r htmlextra --reporter-htmlextra-export results/report.html
+
+      # publish reports
+      - name: Publish report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reports
+          path: results
