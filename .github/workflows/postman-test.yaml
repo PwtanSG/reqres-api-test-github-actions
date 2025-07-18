@@ -30,7 +30,7 @@ jobs:
       # run collection
       - name: run collection
         run: |
-          newman run "collections/ReqResApiTest.postman_collection.json" -e "collections/reqres.postman_environment.json" -r htmlextra --reporter-htmlextra-export results/report.html
+          newman run ReqResApiTest.postman_collection.json -e collections/reqres.postman_environment.json -r htmlextra --reporter-htmlextra-export results/report.html
 
       # publish reports
       - name: Publish report
