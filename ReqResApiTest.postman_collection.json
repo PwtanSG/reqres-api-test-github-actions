@@ -13,17 +13,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(`Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Status code has a string 'OK'\", function () {\r",
-							"    pm.response.to.have.status('OK')\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Response time is less than 200ms\", function () {\r",
-							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
-							"})\r",
+							"utilFunctions.funcValidateStatusCode(pm, 200)\r",
+							"utilFunctions.funcValidateStatusString(pm, \"OK\")\r",
+							"utilFunctions.funcValidateResponseTime(pm, 200)\r",
 							"\r",
 							"// Schema validation\r",
 							"const schema = {\r",
@@ -237,7 +229,34 @@
 							"// Schema validation\r",
 							"pm.test(\"Validate schema\", () => {\r",
 							"    pm.expect(pm.response.json()).to.be.jsonSchema(schema);\r",
-							"});"
+							"});\r",
+							"\r",
+							"jsonResponseData = pm.response.json();\r",
+							"queryPageNo = parseInt(pm.request.url.query.get('page'))\r",
+							"pm.test(`Page number is ${jsonResponseData.page}`, function () {\r",
+							"    pm.expect(jsonResponseData.page === queryPageNo).to.be.true\r",
+							"});\r",
+							"\r",
+							"userList = jsonResponseData.data\r",
+							"pm.test(`Users per_page is ${jsonResponseData.per_page}`, function () {\r",
+							"    pm.expect(jsonResponseData.per_page).to.equal(userList.length)\r",
+							"});\r",
+							"\r",
+							"inValidEmailList = [];\r",
+							"userList.filter(usr => {\r",
+							"    console.log(usr.email)\r",
+							"    utilFunctions.funcValidateEmail(usr.email) \r",
+							"        ? null \r",
+							"        : inValidEmailList.push(usr.email)\r",
+							"})\r",
+							"\r",
+							"pm.test(`Validate users emails`, function () {\r",
+							"    pm.expect(userList.length > 0 && inValidEmailList.length === 0).to.be.true\r",
+							"});\r",
+							"\r",
+							"if (userList.length > 0) {\r",
+							"    pm.collectionVariables.set(\"user_id\", userList[1].id)\r",
+							"}"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -263,7 +282,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/users?page=2",
+					"raw": "{{baseUrl}}/api/users?page=1",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -274,7 +293,7 @@
 					"query": [
 						{
 							"key": "page",
-							"value": "2"
+							"value": "1"
 						}
 					]
 				}
@@ -288,17 +307,10 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(`Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
 							"\r",
-							"pm.test(\"Status code has a string 'OK'\", function () {\r",
-							"    pm.response.to.have.status('OK')\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Response time is less than 200ms\", function () {\r",
-							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
-							"})\r",
+							"utilFunctions.funcValidateStatusCode(pm, 200);\r",
+							"utilFunctions.funcValidateStatusString(pm, \"OK\");\r",
+							"utilFunctions.funcValidateResponseTime(pm, 200); \r",
 							"\r",
 							"// Schema validation\r",
 							"const schema = {\r",
@@ -496,7 +508,14 @@
 							"// Schema validation\r",
 							"pm.test(\"Validate schema\", () => {\r",
 							"    pm.expect(pm.response.json()).to.be.jsonSchema(schema);\r",
-							"});"
+							"});\r",
+							"\r",
+							"// validate email address\r",
+							"pm.test(\"Validate email address\", function () {\r",
+							"    const email = pm.response.json().data.email;\r",
+							"    pm.expect(utilFunctions.funcValidateEmail(email)).to.be.true;\r",
+							"});\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -546,12 +565,65 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "2"
+							"value": "{{user_id}}"
 						}
 					]
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"/* Utility Functions */\r",
+					"utilFunctions = {\r",
+					"    funcValidateEmail: function (emailToValidate) {\r",
+					"        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;\r",
+					"        return emailRegex.test(emailToValidate);\r",
+					"    },\r",
+					"\r",
+					"    funcValidateStatusCode: function (pm, code) {\r",
+					"        pm.test(`Status code is ${code}`, function () {\r",
+					"            pm.response.to.have.status(code);\r",
+					"        });\r",
+					"    },\r",
+					"\r",
+					"    funcValidateStatusString: function (pm, status_str) {\r",
+					"        pm.test(`Status code has a string '${status_str}'`, function () {\r",
+					"            pm.response.to.have.status(status_str)\r",
+					"        })\r",
+					"    },\r",
+					"\r",
+					"    funcValidateResponseTime: function (pm, expected_resp_time_ms) {\r",
+					"        pm.test(`Response time is less than ${expected_resp_time_ms} ms`, function () {\r",
+					"            pm.expect(pm.response.responseTime).to.be.below(expected_resp_time_ms);\r",
+					"        })\r",
+					"    },\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_id",
+			"value": "5",
+			"type": "string"
 		}
 	]
 }
