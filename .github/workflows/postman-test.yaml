@@ -10,9 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # checkout repository
-      - name: Check out Git repository
       - uses: actions/checkout@v4
-      # create folder for report
+      - name: Create report folder
         run: |
           mkdir results
 
@@ -22,7 +21,7 @@ jobs:
         with:
           node-version: 18
 
-      # install newman and html reporter
+      # install newman and reporter
       - name: Install newman and reporter
         run: |
           npm install -g newman
