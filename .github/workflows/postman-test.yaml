@@ -19,13 +19,15 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: "18"
 
       # install newman and reporter
       - name: Install newman and reporter
         run: |
           npm install -g newman
-          npm install -g newman-reporter-htmlextra
+
+      - name: "Install newman reporter htmlextra"
+        run: "npm install -g newman-reporter-htmlextra"
 
       # run collection
       - name: run collection
