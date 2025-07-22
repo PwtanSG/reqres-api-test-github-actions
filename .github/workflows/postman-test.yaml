@@ -22,7 +22,7 @@ jobs:
           node-version: "18"
 
       # install newman and reporter
-      - name: Install newman and reporter
+      - name: Install newman
         run: |
           npm install -g newman
 
