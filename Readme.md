@@ -1,6 +1,6 @@
 ## Introduction 
 This project demostrates using GitHub Action as continuous integration and continuous delivery (CI/CD) platform to automate build, test, and deployment pipeline to test Rest Api using Postman. <br>
-![screenshot](.github/img/github-actions-cicd-postman-test.drawio.png)
+![screenshot](/img/github-actions-cicd-postman-test.drawio.png)
 
 ### Postman
 exported from postman <br>
